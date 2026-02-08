@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCIS - Sistema de Control de Inventario</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2d3748;
+            --primary-dark: #1a202c;
+            --accent: #4299e1;
+            --accent-dark: #3182ce;
+            --success: #38a169;
+            --danger: #e53e3e;
+            --warning: #dd6b20;
+            --gray-50: #f7fafc;
+            --gray-100: #edf2f7;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e0;
+            --gray-600: #718096;
+            --gray-700: #4a5568;
+            --gray-800: #2d3748;
+            --border-radius: 8px;
+            --border-radius-sm: 6px;
+            --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            color: var(--gray-800);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--accent);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .logo-text .subtitle {
+            color: var(--gray-600);
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            background: var(--gray-50);
+            border-radius: var(--border-radius-sm);
+            border: 1px solid var(--gray-200);
+        }
+
+        /* Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar h2 {
+            font-size: 16px;
+            margin-bottom: 16px;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .sidebar h2 i {
+            color: var(--accent);
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 13px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius-sm);
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-800);
+            border: 1px solid var(--gray-200);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 16px;
+        }
+
+        .tab-btn {
+            padding: 10px 16px;
+            background: none;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--gray-600);
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            color: var(--accent);
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Content area */
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Card styles */
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border-top: 3px solid var(--accent);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 16px;
+            border-radius: var(--border-radius-sm);
+            text-align: center;
+            border: 1px solid var(--gray-200);
+        }
+
+        .stat-card i {
+            font-size: 24px;
+            margin-bottom: 12px;
+            color: var(--accent);
+        }
+
+        .stat-card h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--gray-800);
+        }
+
+        .stat-card p {
+            color: var(--gray-600);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Table styles */
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--gray-50);
+        }
+
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 12px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background-color: var(--gray-50);
+        }
+
+        /* Status indicators */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-warning {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .status-danger {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 16px;
+            border-radius: var(--border-radius-sm);
+            margin: 16px 0;
+            border-left: 4px solid var(--accent);
+            background: var(--gray-50);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid var(--gray-300);
+            background: white;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 24px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--gray-600);
+        }
+
+        .close-modal:hover {
+            color: var(--danger);
+        }
+
+        /* Search */
+        .search-box {
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius-sm);
+            width: 100%;
+            font-size: 14px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray-600);
+            margin-top: 40px;
+            font-size: 14px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        /* API Status Indicator */
+        .api-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .api-status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e53e3e;
+            animation: pulse 2s infinite;
+        }
+
+        .api-status.connected::before {
+            background: #38a169;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>SCIS Dashboard</h1>
+                    <div class="subtitle">Sistema de Control de Inventario</div>
+                    <div class="subtitle">Jorge Luis Iraheta A</div>
+                </div>
+            </div>
+            <div class="user-info" id="userInfo">
+                <span id="username">No autenticado</span>
+                <button class="btn btn-sm btn-danger" id="logoutBtn" style="display: none;">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </header>
+
+        <div class="main-layout">
+            <!-- Sidebar (SOLO AUTENTICACIÓN) -->
+            <aside class="sidebar">
+                <!-- Authentication -->
+                <div class="sidebar-section" id="authSection">
+                    <h2><i class="fas fa-user-shield"></i> Autenticación</h2>
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="login">Login</button>
+                        
+                    </div>
+                    
+                    <div id="loginTab" class="tab-content active">
+                        <div class="form-group">
+                            <label for="usernameInput">Usuario:</label>
+                            <input type="text" id="usernameInput" placeholder="admin" autocomplete="username">
+                        </div>
+                        <div class="form-group">
+                            <label for="passwordInput">Contraseña:</label>
+                            <input type="password" id="passwordInput" placeholder="admin123" autocomplete="current-password">
+                        </div>
+                        <button class="btn btn-success btn-block" id="loginBtn">
+                            <i class="fas fa-sign-in-alt"></i> Iniciar sesión
+                        </button>
+                    </div>
+                    
+                    <div id="registerTab" class="tab-content">
+                        <div class="form-group">
+                            <label for="regUsername">Usuario:</label>
+                            <input type="text" id="regUsername" placeholder="nuevo_usuario" autocomplete="username">
+                        </div>
+                        <div class="form-group">
+                            <label for="regEmail">Email:</label>
+                            <input type="email" id="regEmail" placeholder="usuario@email.com" autocomplete="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="regPassword">Contraseña:</label>
+                            <input type="password" id="regPassword" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
+                        </div>
+                        <button class="btn btn-primary btn-block" id="registerBtn">
+                            <i class="fas fa-user-plus"></i> Registrar usuario
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="content-area" id="mainSections" style="display: none;">
+                <!-- Dashboard -->
+                <section class="card">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <i class="fas fa-box"></i>
+                            <h3 id="totalProducts">0</h3>
+                            <p>Productos</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-exchange-alt"></i>
+                            <h3 id="totalMovements">0</h3>
+                            <p>Movimientos</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3 id="lowStockCount">0</h3>
+                            <p>Stock bajo</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-user-tag"></i>
+                            <h3 id="userRoleBadge">-</h3>
+                            <p>Rol actual</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Product Management -->
+                <section class="card">
+                    <h2><i class="fas fa-boxes"></i> Gestión de Productos</h2>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" id="createProductBtn">
+                            <i class="fas fa-plus-circle"></i> Nuevo producto
+                        </button>
+                        <button class="btn btn-secondary" id="refreshProductsBtn">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                        <div style="flex: 1; min-width: 200px;">
+                            <input type="text" id="productSearch" class="search-box" placeholder=" Buscar productos...">
+                        </div>
+                    </div>
+                    
+                    <!-- Product Form -->
+                    <div id="productForm" style="display: none; background: var(--gray-50); padding: 20px; border-radius: var(--border-radius-sm); margin-bottom: 20px;">
+                        <h3 style="margin-bottom: 16px; font-size: 16px;">
+                            <i class="fas fa-edit"></i> <span id="productFormTitle">Nuevo producto</span>
+                        </h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                            <div class="form-group">
+                                <label for="productCode">Código *</label>
+                                <input type="text" id="productCode" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="productName">Nombre *</label>
+                                <input type="text" id="productName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="productStock">Stock inicial</label>
+                                <input type="number" id="productStock" value="100" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="productUnit">Unidad</label>
+                                <input type="text" id="productUnit" value="unidades">
+                            </div>
+                            <div class="form-group">
+                                <label for="productMinStock">Stock mínimo</label>
+                                <input type="number" id="productMinStock" value="10" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="productMaxStock">Stock máximo</label>
+                                <input type="number" id="productMaxStock" value="1000" min="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="productDescription">Descripción</label>
+                            <textarea id="productDescription" rows="2" placeholder="Descripción del producto"></textarea>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button class="btn btn-success" id="saveProductBtn">
+                                <i class="fas fa-save"></i> Guardar producto
+                            </button>
+                            <button class="btn btn-secondary" id="cancelProductBtn">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Products Table -->
+                    <div class="table-container">
+                        <table id="productsTable">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nombre</th>
+                                    <th>Stock</th>
+                                    <th>Mín/Máx</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px; color: var(--gray-600);">
+                                        <i class="fas fa-box-open" style="font-size: 32px; margin-bottom: 12px; display: block; color: var(--gray-300);"></i>
+                                        No hay productos registrados
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="pagination" id="productsPagination" style="display: none;">
+                        <button class="pagination-btn" id="productsPrevBtn" disabled>Anterior</button>
+                        <span class="pagination-info" id="productsPageInfo">Página 1 de 1</span>
+                        <button class="pagination-btn" id="productsNextBtn" disabled>Siguiente</button>
+                    </div>
+                </section>
+
+                <!-- Inventory Movements -->
+                <section class="card">
+                    <h2><i class="fas fa-exchange-alt"></i> Movimientos de Inventario</h2>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" id="createMovementBtn">
+                            <i class="fas fa-plus-circle"></i> Nuevo movimiento
+                        </button>
+                        <button class="btn btn-secondary" id="refreshMovementsBtn">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                    
+                    <!-- Movement Form -->
+                    <div id="movementForm" style="display: none; background: var(--gray-50); padding: 20px; border-radius: var(--border-radius-sm); margin-bottom: 20px;">
+                        <h3 style="margin-bottom: 16px; font-size: 16px;">
+                            <i class="fas fa-exchange-alt"></i> Registrar movimiento
+                        </h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                            <div class="form-group">
+                                <label for="movementProduct">Producto *</label>
+                                <select id="movementProduct" required>
+                                    <option value="">Cargando productos...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="movementQuantity">Cantidad *</label>
+                                <input type="number" id="movementQuantity" value="1" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="movementType">Tipo *</label>
+                                <select id="movementType" required>
+                                    <option value="IN">Entrada (IN)</option>
+                                    <option value="OUT">Salida (OUT)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="movementReason">Razón *</label>
+                            <textarea id="movementReason" rows="2" placeholder="Ej: Compra de proveedor..." required></textarea>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button class="btn btn-success" id="saveMovementBtn">
+                                <i class="fas fa-save"></i> Registrar movimiento
+                            </button>
+                            <button class="btn btn-secondary" id="cancelMovementBtn">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Movements Table -->
+                    <div class="table-container">
+                        <table id="movementsTable">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Producto</th>
+                                    <th>Tipo</th>
+                                    <th>Cantidad</th>
+                                    <th>Stock anterior</th>
+                                    <th>Stock nuevo</th>
+                                    <th>Usuario</th>
+                                </tr>
+                            </thead>
+                            <tbody id="movementsTableBody">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 40px; color: var(--gray-600);">
+                                        <i class="fas fa-exchange-alt" style="font-size: 32px; margin-bottom: 12px; display: block; color: var(--gray-300);"></i>
+                                        No hay movimientos registrados
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="pagination" id="movementsPagination" style="display: none;">
+                        <button class="pagination-btn" id="movementsPrevBtn" disabled>Anterior</button>
+                        <span class="pagination-info" id="movementsPageInfo">Página 1 de 1</span>
+                        <button class="pagination-btn" id="movementsNextBtn" disabled>Siguiente</button>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+       
+
+        <!-- Modal -->
+        <div id="messageModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h3 id="modalTitle" style="margin-bottom: 16px; font-size: 18px;"></h3>
+                <p id="modalMessage" style="color: var(--gray-600);"></p>
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-primary" id="modalOkBtn">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración y estado global
+        const CONFIG = {
+            baseUrl: 'http://localhost:8000',
+            token: localStorage.getItem('scis_token'),
+            user: JSON.parse(localStorage.getItem('scis_user') || 'null')
+        };
+
+        // Variables de paginación
+        let productsPagination = {
+            currentPage: 1,
+            itemsPerPage: 10,
+            totalItems: 0,
+            filteredItems: []
+        };
+
+        let movementsPagination = {
+            currentPage: 1,
+            itemsPerPage: 10,
+            totalItems: 0,
+            filteredItems: []
+        };
+
+        // ========== FUNCIONES DE CONEXIÓN Y AUTENTICACIÓN ==========
+        async function testConnection() {
+            try {
+                const response = await fetch(`${CONFIG.baseUrl}/api/health`);
+                if (response.ok) {
+                    updateConnectionStatus('Conectado', true);
+                    return true;
+                } else {
+                    throw new Error('No se pudo conectar');
+                }
+            } catch (error) {
+                updateConnectionStatus('Desconectado', false);
+                return false;
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('usernameInput').value.trim();
+            const password = document.getElementById('passwordInput').value;
+            
+            if (!username || !password) {
+                showMessage(' Error', 'Por favor ingresa usuario y contraseña');
+                return;
+            }
+            
+            try {
+                showLoading('loginBtn', 'Autenticando...');
+                
+                const formData = new URLSearchParams();
+                formData.append('username', username);
+                formData.append('password', password);
+                
+                const response = await fetch(`${CONFIG.baseUrl}/api/auth/token`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Credenciales incorrectas');
+                }
+                
+                const data = await response.json();
+                CONFIG.token = data.access_token;
+                CONFIG.user = { 
+                    username: data.username, 
+                    role: data.role || 'viewer',
+                    id: data.user_id 
+                };
+                
+                localStorage.setItem('scis_token', data.access_token);
+                localStorage.setItem('scis_user', JSON.stringify(CONFIG.user));
+                
+                updateUIAfterLogin();
+                
+            } catch (error) {
+                showMessage(' Error de autenticación', error.message);
+            } finally {
+                removeLoading('loginBtn', '<i class="fas fa-sign-in-alt"></i> Iniciar sesión');
+            }
+        }
+
+        async function registerUser() {
+            const userData = {
+                username: document.getElementById('regUsername').value,
+                email: document.getElementById('regEmail').value,
+                password: document.getElementById('regPassword').value,
+                full_name: document.getElementById('regUsername').value
+            };
+            
+            if (!userData.username || !userData.email || !userData.password) {
+                showMessage(' Error', 'Por favor completa todos los campos');
+                return;
+            }
+            
+            try {
+                showLoading('registerBtn', 'Registrando...');
+                await apiRequest('/api/auth/register', 'POST', userData, false);
+                showMessage(' Usuario registrado', `Usuario ${userData.username} creado exitosamente`);
+                document.getElementById('regUsername').value = '';
+                document.getElementById('regEmail').value = '';
+                document.getElementById('regPassword').value = '';
+            } catch (error) {
+                showMessage(' Error', error.message);
+            } finally {
+                removeLoading('registerBtn', '<i class="fas fa-user-plus"></i> Registrar usuario');
+            }
+        }
+
+        function logout() {
+            CONFIG.token = null;
+            CONFIG.user = null;
+            localStorage.removeItem('scis_token');
+            localStorage.removeItem('scis_user');
+            updateUIAfterLogout();
+            showMessage(' Sesión cerrada', 'Has cerrado sesión exitosamente');
+        }
+
+        // ========== FUNCIONES DE PRODUCTOS CON PAGINACIÓN ==========
+        async function loadProducts(search = '') {
+            try {
+                showLoading('refreshProductsBtn', 'Cargando...');
+                const products = await apiRequest('/api/products/');
+                
+                // Filtrar productos si hay búsqueda
+                let filteredProducts = products;
+                if (search) {
+                    filteredProducts = products.filter(p => 
+                        p.code.toLowerCase().includes(search.toLowerCase()) || 
+                        p.name.toLowerCase().includes(search.toLowerCase()) ||
+                        (p.description && p.description.toLowerCase().includes(search.toLowerCase()))
+                    );
+                }
+                
+                // Configurar paginación
+                productsPagination.filteredItems = filteredProducts;
+                productsPagination.totalItems = filteredProducts.length;
+                
+                updateProductsTable();
+                await updateDashboard();
+                
+            } catch (error) {
+                showMessage(' Error', 'No se pudieron cargar los productos');
+                productsPagination.filteredItems = [];
+                productsPagination.totalItems = 0;
+                updateProductsTable();
+            } finally {
+                removeLoading('refreshProductsBtn', '<i class="fas fa-sync-alt"></i> Actualizar');
+            }
+        }
+
+        function updateProductsTable() {
+            const tbody = document.getElementById('productsTableBody');
+            const pagination = document.getElementById('productsPagination');
+            
+            if (productsPagination.totalItems === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: var(--gray-600);">
+                            <i class="fas fa-box-open" style="font-size: 32px; margin-bottom: 12px; display: block; color: var(--gray-300);"></i>
+                            No hay productos registrados
+                        </td>
+                    </tr>
+                `;
+                pagination.style.display = 'none';
+                return;
+            }
+            
+            // Calcular qué productos mostrar
+            const startIndex = (productsPagination.currentPage - 1) * productsPagination.itemsPerPage;
+            const endIndex = startIndex + productsPagination.itemsPerPage;
+            const productsToShow = productsPagination.filteredItems.slice(startIndex, endIndex);
+            
+            // Renderizar productos
+            tbody.innerHTML = '';
+            productsToShow.forEach(product => {
+                const stockPercentage = product.max_stock > 0 ? 
+                    Math.round((product.current_stock / product.max_stock) * 100) : 0;
+                
+                let stockClass = 'status-success';
+                if (product.current_stock < product.min_stock) {
+                    stockClass = 'status-danger';
+                } else if (stockPercentage < 30) {
+                    stockClass = 'status-warning';
+                }
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${product.code}</strong></td>
+                    <td>
+                        <div style="font-weight: 600;">${product.name}</div>
+                        ${product.description ? `<div style="font-size: 12px; color: var(--gray-600); margin-top: 4px;">${product.description}</div>` : ''}
+                    </td>
+                    <td>
+                        <div style="font-weight: 700;">${product.current_stock}</div>
+                        <div style="font-size: 12px; color: var(--gray-600);">${product.unit}</div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 600;">${product.min_stock}</div>
+                        <div style="font-size: 12px; color: var(--gray-600);">/ ${product.max_stock}</div>
+                    </td>
+                    <td><span class="status ${stockClass}">${stockPercentage}%</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id}, '${product.code}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Actualizar paginación
+            updateProductsPaginationUI();
+            pagination.style.display = 'flex';
+        }
+
+        function updateProductsPaginationUI() {
+            const totalPages = Math.ceil(productsPagination.totalItems / productsPagination.itemsPerPage);
+            const prevBtn = document.getElementById('productsPrevBtn');
+            const nextBtn = document.getElementById('productsNextBtn');
+            const pageInfo = document.getElementById('productsPageInfo');
+            
+            prevBtn.disabled = productsPagination.currentPage === 1;
+            nextBtn.disabled = productsPagination.currentPage === totalPages || totalPages === 0;
+            pageInfo.textContent = `Página ${productsPagination.currentPage} de ${totalPages} (${productsPagination.totalItems} productos)`;
+        }
+
+        async function createProduct() {
+            const productData = {
+                code: document.getElementById('productCode').value,
+                name: document.getElementById('productName').value,
+                description: document.getElementById('productDescription').value || '',
+                current_stock: parseInt(document.getElementById('productStock').value) || 0,
+                min_stock: parseInt(document.getElementById('productMinStock').value) || 0,
+                max_stock: parseInt(document.getElementById('productMaxStock').value) || 1000,
+                unit: document.getElementById('productUnit').value || 'unidades',
+                price: 0.0
+            };
+            
+            if (!productData.code || !productData.name) {
+                showMessage(' Error', 'Código y nombre son requeridos');
+                return;
+            }
+            
+            try {
+                showLoading('saveProductBtn', 'Guardando...');
+                await apiRequest('/api/products/', 'POST', productData);
+                
+                showMessage(' Producto creado', `Producto ${productData.code} creado exitosamente`);
+                hideProductForm();
+                await loadProducts();
+                
+            } catch (error) {
+                showMessage(' Error', error.message);
+            } finally {
+                removeLoading('saveProductBtn', '<i class="fas fa-save"></i> Guardar producto');
+            }
+        }
+
+        async function deleteProduct(id, code) {
+            if (!confirm(`¿Estás seguro de eliminar el producto "${code}"?`)) return;
+            
+            try {
+                await apiRequest(`/api/products/${id}`, 'DELETE');
+                showMessage(' Producto eliminado', `Producto ${code} eliminado exitosamente`);
+                await loadProducts();
+            } catch (error) {
+                showMessage(' Error', error.message);
+            }
+        }
+
+        // ========== FUNCIONES DE MOVIMIENTOS CON PAGINACIÓN ==========
+        async function loadMovements() {
+            try {
+                showLoading('refreshMovementsBtn', 'Cargando...');
+                
+                let movements = [];
+                try {
+                    movements = await apiRequest('/api/inventory/movements?limit=100');
+                } catch (error) {
+                    console.log('No se pudieron cargar movimientos');
+                }
+                
+                // Configurar paginación
+                movementsPagination.filteredItems = movements;
+                movementsPagination.totalItems = movements.length;
+                
+                updateMovementsTable();
+                
+            } catch (error) {
+                console.error('Error cargando movimientos:', error);
+                movementsPagination.filteredItems = [];
+                movementsPagination.totalItems = 0;
+                updateMovementsTable();
+            } finally {
+                removeLoading('refreshMovementsBtn', '<i class="fas fa-sync-alt"></i> Actualizar');
+            }
+        }
+
+        function updateMovementsTable() {
+            const tbody = document.getElementById('movementsTableBody');
+            const pagination = document.getElementById('movementsPagination');
+            
+            if (movementsPagination.totalItems === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--gray-600);">
+                            <i class="fas fa-exchange-alt" style="font-size: 32px; margin-bottom: 12px; display: block; color: var(--gray-300);"></i>
+                            No hay movimientos registrados
+                        </td>
+                    </tr>
+                `;
+                pagination.style.display = 'none';
+                return;
+            }
+            
+            // Calcular qué movimientos mostrar
+            const startIndex = (movementsPagination.currentPage - 1) * movementsPagination.itemsPerPage;
+            const endIndex = startIndex + movementsPagination.itemsPerPage;
+            const movementsToShow = movementsPagination.filteredItems.slice(startIndex, endIndex);
+            
+            // Renderizar movimientos
+            tbody.innerHTML = '';
+            movementsToShow.forEach(movement => {
+                const date = new Date(movement.created_at).toLocaleString();
+                const typeClass = movement.movement_type === 'IN' ? 'status-success' : 'status-danger';
+                const typeIcon = movement.movement_type === 'IN' ? 'fa-arrow-down' : 'fa-arrow-up';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div style="font-weight: 600;">${date.split(' ')[0]}</div>
+                        <div style="font-size: 12px; color: var(--gray-600);">${date.split(' ')[1]}</div>
+                    </td>
+                    <td>${movement.product_name || movement.product_code || 'Producto ' + movement.product_id}</td>
+                    <td><span class="status ${typeClass}"><i class="fas ${typeIcon}"></i> ${movement.movement_type}</span></td>
+                    <td>
+                        <div style="font-weight: 700;">${movement.quantity}</div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 600;">${movement.previous_stock}</div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 700;">${movement.new_stock}</div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 600;">${movement.username || movement.user_name || 'Usuario'}</div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Actualizar paginación
+            updateMovementsPaginationUI();
+            pagination.style.display = 'flex';
+        }
+
+        function updateMovementsPaginationUI() {
+            const totalPages = Math.ceil(movementsPagination.totalItems / movementsPagination.itemsPerPage);
+            const prevBtn = document.getElementById('movementsPrevBtn');
+            const nextBtn = document.getElementById('movementsNextBtn');
+            const pageInfo = document.getElementById('movementsPageInfo');
+            
+            prevBtn.disabled = movementsPagination.currentPage === 1;
+            nextBtn.disabled = movementsPagination.currentPage === totalPages || totalPages === 0;
+            pageInfo.textContent = `Página ${movementsPagination.currentPage} de ${totalPages} (${movementsPagination.totalItems} movimientos)`;
+        }
+
+        async function registerMovement() {
+            const productId = parseInt(document.getElementById('movementProduct').value);
+            const quantity = parseInt(document.getElementById('movementQuantity').value);
+            const movementType = document.getElementById('movementType').value;
+            const reason = document.getElementById('movementReason').value.trim();
+            
+            if (!productId || !quantity || !reason) {
+                showMessage(' Error', 'Por favor completa todos los campos requeridos');
+                return;
+            }
+            
+            if (quantity <= 0) {
+                showMessage(' Error', 'La cantidad debe ser mayor a 0');
+                return;
+            }
+            
+            const movementData = {
+                product_id: productId,
+                quantity: quantity,
+                movement_type: movementType,
+                reason: reason
+            };
+            
+            try {
+                showLoading('saveMovementBtn', 'Registrando...');
+                const response = await apiRequest('/api/inventory/movements', 'POST', movementData);
+                
+                showMessage(' Movimiento registrado', 'Movimiento registrado exitosamente');
+                hideMovementForm();
+                await loadProducts();
+                await loadMovements();
+                await updateDashboard();
+                
+            } catch (error) {
+                showMessage(' Error', error.message);
+            } finally {
+                removeLoading('saveMovementBtn', '<i class="fas fa-save"></i> Registrar movimiento');
+            }
+        }
+
+        // ========== FUNCIONES DE UI ==========
+        function updateUIAfterLogin() {
+            document.getElementById('username').textContent = CONFIG.user.username;
+            document.getElementById('userRoleBadge').textContent = CONFIG.user.role;
+            
+            document.getElementById('logoutBtn').style.display = 'inline-flex';
+            document.getElementById('mainSections').style.display = 'flex';
+            document.getElementById('authSection').style.display = 'none';
+            
+            // Resetear paginación
+            productsPagination.currentPage = 1;
+            movementsPagination.currentPage = 1;
+            
+            loadProducts();
+            loadMovements();
+            updateDashboard();
+        }
+
+        function updateUIAfterLogout() {
+            document.getElementById('username').textContent = 'No autenticado';
+            document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('mainSections').style.display = 'none';
+            document.getElementById('authSection').style.display = 'block';
+            
+            document.getElementById('productsTableBody').innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: var(--gray-600);">
+                        <i class="fas fa-box-open" style="font-size: 32px; margin-bottom: 12px; display: block; color: var(--gray-300);"></i>
+                        No hay productos registrados
+                    </td>
+                </tr>
+            `;
+            
+            document.getElementById('movementsTableBody').innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 40px; color: var(--gray-600);">
+                        <i class="fas fa-exchange-alt" style="font-size: 32px; margin-bottom: 12px; display: block; color: var(--gray-300);"></i>
+                        No hay movimientos registrados
+                    </td>
+                </tr>
+            `;
+            
+            document.getElementById('productsPagination').style.display = 'none';
+            document.getElementById('movementsPagination').style.display = 'none';
+            
+            document.getElementById('totalProducts').textContent = '0';
+            document.getElementById('totalMovements').textContent = '0';
+            document.getElementById('lowStockCount').textContent = '0';
+            document.getElementById('userRoleBadge').textContent = '-';
+        }
+
+        async function updateDashboard() {
+            try {
+                // Obtener estadísticas del dashboard
+                const stats = await apiRequest('/api/dashboard/stats');
+                
+                document.getElementById('totalProducts').textContent = stats.total_products || 0;
+                document.getElementById('totalMovements').textContent = stats.total_movements || 0;
+                document.getElementById('lowStockCount').textContent = stats.low_stock_count || 0;
+                
+                if (CONFIG.user) {
+                    document.getElementById('userRoleBadge').textContent = CONFIG.user.role;
+                }
+                
+            } catch (error) {
+                // Si falla, usar datos locales
+                const products = productsPagination.filteredItems;
+                document.getElementById('totalProducts').textContent = products.length;
+                
+                const lowStockCount = products.filter(p => p.current_stock < p.min_stock).length;
+                document.getElementById('lowStockCount').textContent = lowStockCount;
+                
+                if (CONFIG.user) {
+                    document.getElementById('userRoleBadge').textContent = CONFIG.user.role;
+                }
+            }
+        }
+
+        function updateConnectionStatus(status, isConnected) {
+            const element = document.getElementById('connectionStatus');
+            element.textContent = status;
+            
+            if (isConnected) {
+                element.classList.add('connected');
+            } else {
+                element.classList.remove('connected');
+            }
+        }
+
+        function showProductForm() {
+            document.getElementById('productForm').style.display = 'block';
+        }
+
+        function hideProductForm() {
+            document.getElementById('productForm').style.display = 'none';
+            document.getElementById('productCode').value = '';
+            document.getElementById('productName').value = '';
+            document.getElementById('productDescription').value = '';
+            document.getElementById('productStock').value = 100;
+            document.getElementById('productMinStock').value = 10;
+            document.getElementById('productMaxStock').value = 1000;
+            document.getElementById('productUnit').value = 'unidades';
+        }
+
+        async function showMovementForm() {
+            const productSelect = document.getElementById('movementProduct');
+            
+            try {
+                const products = await apiRequest('/api/products/');
+                productSelect.innerHTML = '<option value="">Seleccionar producto...</option>';
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.id;
+                    option.textContent = `${product.code} - ${product.name} (Stock: ${product.current_stock})`;
+                    productSelect.appendChild(option);
+                });
+            } catch (error) {
+                productSelect.innerHTML = '<option value="">Error cargando productos</option>';
+            }
+            
+            document.getElementById('movementForm').style.display = 'block';
+        }
+
+        function hideMovementForm() {
+            document.getElementById('movementForm').style.display = 'none';
+            document.getElementById('movementProduct').value = '';
+            document.getElementById('movementQuantity').value = 1;
+            document.getElementById('movementType').value = 'IN';
+            document.getElementById('movementReason').value = '';
+        }
+
+        // ========== FUNCIONES UTILITARIAS ==========
+        async function apiRequest(endpoint, method = 'GET', data = null, requireAuth = true) {
+            const url = `${CONFIG.baseUrl}${endpoint}`;
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            };
+            
+            if (CONFIG.token && requireAuth) {
+                options.headers['Authorization'] = `Bearer ${CONFIG.token}`;
+            }
+            
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+            
+            const response = await fetch(url, options);
+            
+            if (!response.ok) {
+                let errorMessage = `Error ${response.status}: ${response.statusText}`;
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.detail || errorData.message || errorMessage;
+                } catch {
+                    const text = await response.text();
+                    if (text) errorMessage = text;
+                }
+                throw new Error(errorMessage);
+            }
+            
+            if (response.status === 204) {
+                return null;
+            }
+            
+            return await response.json();
+        }
+
+        function showMessage(title, message) {
+            const modal = document.getElementById('messageModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            
+            modal.style.display = 'block';
+        }
+
+        function showLoading(buttonId, text = 'Cargando...') {
+            const btn = document.getElementById(buttonId);
+            if (btn) {
+                btn.innerHTML = `${text}...`;
+                btn.disabled = true;
+            }
+        }
+
+        function removeLoading(buttonId, originalHtml) {
+            const btn = document.getElementById(buttonId);
+            if (btn) {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+
+        // ========== INICIALIZACIÓN ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event Listeners
+            document.getElementById('loginBtn').addEventListener('click', login);
+            document.getElementById('registerBtn').addEventListener('click', registerUser);
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            
+            // Tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tab = this.dataset.tab;
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById(`${tab}Tab`).classList.add('active');
+                });
+            });
+            
+            // Productos
+            document.getElementById('createProductBtn').addEventListener('click', showProductForm);
+            document.getElementById('refreshProductsBtn').addEventListener('click', () => loadProducts());
+            document.getElementById('saveProductBtn').addEventListener('click', createProduct);
+            document.getElementById('cancelProductBtn').addEventListener('click', hideProductForm);
+            
+            // Búsqueda de productos
+            document.getElementById('productSearch').addEventListener('input', function(e) {
+                productsPagination.currentPage = 1;
+                loadProducts(e.target.value);
+            });
+            
+            // Paginación de productos
+            document.getElementById('productsPrevBtn').addEventListener('click', function() {
+                if (productsPagination.currentPage > 1) {
+                    productsPagination.currentPage--;
+                    updateProductsTable();
+                }
+            });
+            
+            document.getElementById('productsNextBtn').addEventListener('click', function() {
+                const totalPages = Math.ceil(productsPagination.totalItems / productsPagination.itemsPerPage);
+                if (productsPagination.currentPage < totalPages) {
+                    productsPagination.currentPage++;
+                    updateProductsTable();
+                }
+            });
+            
+            // Movimientos
+            document.getElementById('createMovementBtn').addEventListener('click', showMovementForm);
+            document.getElementById('refreshMovementsBtn').addEventListener('click', loadMovements);
+            document.getElementById('saveMovementBtn').addEventListener('click', registerMovement);
+            document.getElementById('cancelMovementBtn').addEventListener('click', hideMovementForm);
+            
+            // Paginación de movimientos
+            document.getElementById('movementsPrevBtn').addEventListener('click', function() {
+                if (movementsPagination.currentPage > 1) {
+                    movementsPagination.currentPage--;
+                    updateMovementsTable();
+                }
+            });
+            
+            document.getElementById('movementsNextBtn').addEventListener('click', function() {
+                const totalPages = Math.ceil(movementsPagination.totalItems / movementsPagination.itemsPerPage);
+                if (movementsPagination.currentPage < totalPages) {
+                    movementsPagination.currentPage++;
+                    updateMovementsTable();
+                }
+            });
+            
+            // Modal
+            document.querySelector('.close-modal').addEventListener('click', function() {
+                document.getElementById('messageModal').style.display = 'none';
+            });
+            
+            document.getElementById('modalOkBtn').addEventListener('click', function() {
+                document.getElementById('messageModal').style.display = 'none';
+            });
+            
+            // Cerrar modal al hacer clic fuera
+            window.addEventListener('click', function(event) {
+                const modal = document.getElementById('messageModal');
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Verificar autenticación al cargar
+            if (CONFIG.token && CONFIG.user) {
+                updateUIAfterLogin();
+            } else {
+                updateUIAfterLogout();
+            }
+            
+           
+        });
+    </script>
+</body>
+</html>
